@@ -7,19 +7,17 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 function getAccessToken(authCode, clientID, clientSecret)
 {
     var url = "https://graph.api.smartthings.com/oauth/token";
-    var content = "grant_type=authorization_code";
-    url += "&redirect_uri=http://localhost:8000";
+    url += "?grant_type=authorization_code";
+    url += "&redirect_uri=http://localhost:8000/authSuccess.html";
     url += "&client_id=" + clientID;
-    url += "&client_secret=" + clientSecret;
     url += "&code=" + authCode;
-    
+    url += "&client_secret=" + clientSecret;
 
     console.log("Sending request to: " + url);
     
     var req = new XMLHttpRequest();
     
-    req.open('POST', url, true);
-    req.setRequestHeader("content-type","application/x-www-form-urlencoded");
+    req.open('GET', url, true);
 
     req.onreadystatechange = function (e)
     {
@@ -27,7 +25,6 @@ function getAccessToken(authCode, clientID, clientSecret)
         {
             if(req.status == 200)
             {
-                console.log("Request info: " + Object.getOwnPropertyNames(req));
                 console.log("Response from ST: " + req.responseText);
                 
                 accessToken = JSON.parse(req.responseText).access_token;
@@ -36,12 +33,13 @@ function getAccessToken(authCode, clientID, clientSecret)
             }
             else
             {
-                console.log("Something went wrong: " + req.status);
+                console.log("Something went wrong: ", req.status);
+                console.log("Response: " + req.responseText);
             }
         }
     };
     
-    req.send(content);
+    req.send(null);
 }
 
 
@@ -61,14 +59,15 @@ function getEndpoints()
         {
             if(req.status == 200)
             {
-                console.log("Endpoint Response from ST: " + req.response);
+                console.log("Endpoint Response from ST: " + req.responseText);
                 
-                stEndpoint = JSON.parse(req.response)[0].uri;
+                stEndpoint = JSON.parse(req.responseText)[0].uri;
                 console.log("ST Endpoint: " + stEndpoint);
             }
             else
             {
-                alert("Something went wrong");
+                console.log("Something went wrong: " + req.status);
+                console.log("Response: " + req.responseText);
             }
         }
     };
