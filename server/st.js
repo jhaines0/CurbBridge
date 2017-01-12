@@ -2,10 +2,13 @@
 var accessToken;
 var stEndpoint;
 
+var onConnect = function(){console.log("Default onConnect");};
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-function getAccessToken(authCode, clientID, clientSecret)
+function getAccessToken(authCode, clientID, clientSecret, onConnectCb)
 {
+    onConnect = onConnectCb;
+
     var url = "https://graph.api.smartthings.com/oauth/token";
     url += "?grant_type=authorization_code";
     url += "&redirect_uri=http://localhost:8000/authSuccess.html";
@@ -63,6 +66,8 @@ function getEndpoints()
                 
                 stEndpoint = JSON.parse(req.responseText)[0].uri;
                 console.log("ST Endpoint: " + stEndpoint);
+                
+                onConnect();
             }
             else
             {
@@ -91,3 +96,4 @@ function sendDataToST(endpoint, data)
 
 module.exports.connect = getAccessToken;
 module.exports.send = sendDataToST;
+

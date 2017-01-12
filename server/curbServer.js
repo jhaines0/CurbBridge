@@ -5,6 +5,7 @@ var qs = require('querystring');
 var url = require('url');
 
 var st = require('./st');
+var curb = require('./curb');
 
 var stAuthCode;
 
@@ -88,8 +89,13 @@ var server = http.createServer(function (request, response)
             console.log("Username: "+ userInfo.username);
             console.log("Password: " + userInfo.password);
             
+            var onConnect = function()
+            {
+                console.log("Curb onConnect");
+                curb.connect(userInfo.username, userInfo.password, st);
+            }
             
-            st.connect(stAuthCode, userInfo.client_id, userInfo.client_secret);
+            st.connect(stAuthCode, userInfo.client_id, userInfo.client_secret, onConnect);
             
         });
         

@@ -5,60 +5,65 @@ var curbRefreshToken;
 var profileLink;
 var profile;
 
+var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+var FormData = require('form-data');
+var btoa = require('btoa');
+var mqtt = require('mqtt');
 
-function getCurbToken()
+var smartThings;
+
+function getCurbToken(username, password, st)
 {
-    document.getElementById("curbProgress").innerHTML = "Logging in to Curb";
+    smartThings = st;
+    console.log("Logging in to Curb");
 
-    var form = document.getElementById("curbLoginForm");
-    
     var url = "https://app.energycurb.com/oauth2/token";
-    
-    
     var formData = new FormData();
     
+    var response = "";
+    
     formData.append("grant_type", "password");
-    for (var i = 0; i < form.length ;i++)
-    {
-        formData.append(form.elements[i].name, form.elements[i].value);
-    }
-
+    formData.append("username", username);
+    formData.append("password", password);
     
-    var req = new XMLHttpRequest();
     
-    req.open('POST', url, true);
-    
-    req.setRequestHeader("Authorization", "Basic " + btoa("s1dfl7jbxov5pth1rxzsc0fl480zz6rwg4uo6bu0gzu1t89393csjwps6g5lsgcx:8dpdzm2a6mcyg3xocfqvfrajfin6yajjdoqmhj77ynvksmyaqw6rpvppn5srde6d"));
-    
-    req.onreadystatechange = function (e)
-    {
-        if (req.readyState == 4)
-        {
-            if(req.status == 200)
-            {
-                console.log("Response from Curb: " + req.response);
-                
-                curbAccessToken = JSON.parse(req.response).access_token;
-                curbRefreshToken = JSON.parse(req.response).refresh_token;
-                
-                console.log("Curb Access Token: " + curbAccessToken);
-                console.log("Curb Refresh Token: " + curbRefreshToken);
-                
-                getCurbProfile();
-            }
-            else
-            {
-                alert("Something went wrong");
-            }
-        }
-    };
-    
-    req.send(formData);
+    formData.submit({
+                        host: 'app.energycurb.com',
+                        protocol: 'https:',
+                        path: '/oauth2/token',
+                        headers: {"Authorization" : "Basic " + btoa("s1dfl7jbxov5pth1rxzsc0fl480zz6rwg4uo6bu0gzu1t89393csjwps6g5lsgcx:8dpdzm2a6mcyg3xocfqvfrajfin6yajjdoqmhj77ynvksmyaqw6rpvppn5srde6d")}
+                    },
+                    function(err, res)
+                    {
+                        if(res && res.statusCode == 200)
+                        {
+                            res.on('data', (chunk) =>
+                            {
+                                response += chunk;
+                            });
+                            res.on('end', () =>
+                            {
+                                //console.log("Response: " + response);
+                                
+                                curbAccessToken = JSON.parse(response).access_token;
+                                curbRefreshToken = JSON.parse(response).refresh_token;
+                                
+                                console.log("Curb Access Token: " + curbAccessToken);
+                                console.log("Curb Refresh Token: " + curbRefreshToken);
+                                
+                                getCurbProfile();
+                            });
+                        }
+                        else
+                        {
+                            console.log("Something Went Wrong...");
+                        }
+                    });
 }
 
 function getCurbProfile()
 {
-    document.getElementById("curbProgress").innerHTML = "Requesting Curb Profile";
+    console.log("Requesting Curb Profile");
     
     var url = "https://app.energycurb.com/api";
 
@@ -72,16 +77,16 @@ function getCurbProfile()
         {
             if(req.status == 200)
             {
-                console.log("Curb API Entry Response: " + req.response);
+                console.log("Curb API Entry Response: " + req.responseText);
                 
-                profileLink = JSON.parse(req.response)._links.profiles.href;
+                profileLink = JSON.parse(req.responseText)._links.profiles.href;
                 console.log("Curb Profile: " + profileLink);
                 
                 getCurbMetadata();
             }
             else
             {
-                alert("Something went wrong");
+                console.log("Something went wrong");
             }
         }
     };
@@ -93,7 +98,7 @@ function getCurbProfile()
 
 function getCurbMetadata()
 {
-    document.getElementById("curbProgress").innerHTML = "Requesting Curb Metadata";
+    console.log("Requesting Curb Metadata");
     
     var url = "https://app.energycurb.com";
 
@@ -107,17 +112,17 @@ function getCurbMetadata()
         {
             if(req.status == 200)
             {
-                console.log("Curb Profile: " + req.response);
+                console.log("Curb Profile: " + req.responseText);
                 
-                profile = JSON.parse(req.response);
+                profile = JSON.parse(req.responseText);
                 
-                sendDataToST("metadata",req.response);
+                smartThings.send("metadata",req.responseText);
                 
                 connectCurb();
             }
             else
             {
-                alert("Something went wrong");
+                console.log("Something went wrong");
             }
         }
     };
@@ -130,66 +135,25 @@ function getCurbMetadata()
 
 function connectCurb()
 {
-    document.getElementById("curbProgress").innerHTML = "Subscribing to streaming data";
+    console.log("Subscribing to streaming data");
     
-    // Extract fields from profile
-    var parser = document.createElement('a');
-    parser.href = profile._embedded.profiles[0].real_time[0]._links.ws.href;
-
-    console.log("Link Hostname: " + parser.hostname);
-    console.log("Link Username: " + parser.username);
-    console.log("Link Password: " + parser.password);
-
-    // Create a client instance
-    client = new Paho.MQTT.Client(parser.hostname, 443, "clientId");
-
-    // set callback handlers
-    client.onConnectionLost = onConnectionLost;
-    client.onMessageArrived = onMessageArrived;
-
-    // connect the client
-    client.connect({onSuccess:onConnect, onFailure:onFailure, userName:parser.username, password:parser.password, useSSL:true});
+    var topic = profile._embedded.profiles[0].real_time[0].topic;
+    
+    var client  = mqtt.connect(profile._embedded.profiles[0].real_time[0]._links.ws.href);
+ 
+    client.on('connect', function ()
+    {
+        console.log("Connected");
+        client.subscribe(topic)
+    })
+     
+    client.on('message', function (topic, message)
+    {
+        console.log(message.toString())
+        smartThings.send("data", message.toString());
+    })
 }
 
-// called when the client connects
-function onConnect() {
-  // Once a connection has been made, make a subscription and send a message.
-  console.log("onConnect");
-  
-  var topic = profile._embedded.profiles[0].real_time[0].topic;
-  console.log("Subscribing to " + topic);
-  
-  client.subscribe(topic,{onSuccess:onSubscribe, onFailure:onSubscribeFailure});
-}
 
-function onSubscribe(responseObject)
-{
-  console.log("onSubscribe");
-}
+module.exports.connect = getCurbToken;
 
-function onSubscribeFailure(responseObject)
-{
-  console.log("onSubscribeFailure: " + responseObject.errorMessage);
-}
-
-function onFailure(responseObject) {
-  console.log("onFailure: "+responseObject.errorMessage);
-}
-
-// called when the client loses its connection
-function onConnectionLost(responseObject) {
-  if (responseObject.errorCode !== 0) {
-    console.log("onConnectionLost: "+responseObject.errorMessage);
-  }
-}
-
-// called when a message arrives
-function onMessageArrived(message) {
-  console.log("onMessageArrived: "+message.payloadString);
-  
-  ts = JSON.parse(message.payloadString).ts;
-  
-  document.getElementById("curbProgress").innerHTML = "Data Streaming: " + ts;
-  
-  sendDataToST("data",message.payloadString);
-}
