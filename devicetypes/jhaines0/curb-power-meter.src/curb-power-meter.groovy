@@ -50,11 +50,9 @@ def handleMeasurements(data)
 	//log.debug "Handle Measurements: ${data}"
     
     def val = data[state.register]
-    
     //log.debug "Raw Value: ${val}"
     
     val *= state.multiplier
-    
     //log.debug "Scaled Value: ${val}"
     
     sendEvent(name: "power", value: Math.round(val))
