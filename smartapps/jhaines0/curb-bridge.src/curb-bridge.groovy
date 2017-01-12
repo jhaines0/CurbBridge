@@ -68,7 +68,6 @@ private removeChildDevices(delete) {
 }
 
 def initialize() {
-	// TODO: subscribe to attributes, devices, locations, etc.
 }
 
 def metadataArrived()
