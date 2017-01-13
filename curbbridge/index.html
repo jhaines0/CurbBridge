@@ -3,7 +3,7 @@
 <body>
 
     <form method="get" id="clientIdForm" action="https://graph.api.smartthings.com/oauth/authorize">
-        Client ID: <input type="text" name="client_id" value="382a163c-b35f-4e74-b8b5-1a313ccd7067"><br>
+        Client ID: <input type="text" name="client_id" value=""><br>
     </form>
 
     <button onclick="getAuthorizationCode()">Connect to Smartthings</button><br>
@@ -13,9 +13,9 @@
     
     
     <form method="post" id="connectForm" action="http://127.0.0.1:8000/">
-        Client ID: <input type="text" name="client_id" value="382a163c-b35f-4e74-b8b5-1a313ccd7067"><br>
-        Client Secret: <input type="text" name="client_secret" autocomplete="on" value="00814904-5200-4575-a239-86f1c42fb9e2"><br>
-        Curb Username: <input type="text" name="username" value="haines.justin@gmail.com"><br>
+        Client ID: <input type="text" name="client_id" value=""><br>
+        Client Secret: <input type="text" name="client_secret" autocomplete="on" value=""><br>
+        Curb Username: <input type="text" name="username" value=""><br>
         Curb Password: <input type="password" name="password"><br>
         <input type="submit" value="Submit">
     </form>
@@ -28,14 +28,4 @@
 </body>
 </html>
 
-<!--
-    <form method="post" id="mainForm" action="http://127.0.0.1:8000/">
-        Client ID: <input type="text" name="client_id" value="382a163c-b35f-4e74-b8b5-1a313ccd7067"><br>
-        Client Secret: <input type="text" name="client_secret" autocomplete="on" value="00814904-5200-4575-a239-86f1c42fb9e2"><br>
-        <input type="submit" value="Submit">
-    </form>
-
-</body>
-</html>
--->
 
