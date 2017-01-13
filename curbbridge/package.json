@@ -2,7 +2,7 @@
   "name": "curbbridge",
   "version": "1.0.0",
   "description": "",
-  "main": "curb.js",
+  "main": "curbServer.js",
   "dependencies": {
     "btoa": "^1.1.2",
     "form-data": "^2.1.2",
