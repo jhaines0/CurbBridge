@@ -5,6 +5,8 @@ var curbRefreshToken;
 var profileLink;
 var profile;
 
+var historical;
+
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 var FormData = require('form-data');
 var btoa = require('btoa');
@@ -119,10 +121,87 @@ function getCurbMetadata()
                 smartThings.send("metadata",req.responseText);
                 
                 connectCurb();
+                //getCurbHistoricalMeta();
             }
             else
             {
                 console.log("Something went wrong");
+            }
+        }
+    };
+    
+    req.setRequestHeader("Authorization","Bearer " + btoa(curbAccessToken));
+    
+    req.send(null);
+}
+
+function getCurbHistoricalMeta()
+{
+    console.log("Requesting Curb Historical Metadata");
+    
+    var url = "https://app.energycurb.com";
+
+    var req = new XMLHttpRequest();
+    
+    var historicalLink = profile._embedded.profiles[0]._links.historical.href;
+    
+    req.open('GET', url + historicalLink, true);
+
+    req.onreadystatechange = function (e)
+    {
+        if (req.readyState == 4)
+        {
+            if(req.status == 200)
+            {
+                //console.log("Curb Historical: " + req.responseText);
+                
+                historical = JSON.parse(req.responseText);
+                
+                getCurbHistorical();
+            }
+            else
+            {
+                console.log("Something went wrong");
+            }
+        }
+    };
+    
+    req.setRequestHeader("Authorization","Bearer " + btoa(curbAccessToken));
+    
+    req.send(null);
+}
+
+
+function getCurbHistorical()
+{
+    console.log("Requesting Curb Historical Data");
+    
+    var url = "https://app.energycurb.com";
+
+    var req = new XMLHttpRequest();
+    
+    var link = historical._links.minutes.href;
+    
+    var now = Math.floor(Date.now() / 1000);
+    
+    var since = now - 60*60;// Start of window
+    var until = now;// End of window
+    
+    req.open('GET', url + link + "&since=" + since + "&until=" + until + "&unit=w", true);
+
+    req.onreadystatechange = function (e)
+    {
+        if (req.readyState == 4)
+        {
+            if(req.status == 200)
+            {
+                console.log("Curb Historical Data: " + req.responseText);
+                
+                connectCurb();
+            }
+            else
+            {
+                console.log("Something went wrong: " + req.responseText);
             }
         }
     };
