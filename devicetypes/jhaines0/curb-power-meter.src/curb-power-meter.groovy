@@ -31,7 +31,7 @@ metadata {
 	}
 }
 
-def configure(BigDecimal multiplier, String register)
+def configure(BigDecimal multiplier, String register, String prefix)
 {
 	log.debug "Name: ${device.name}"
     log.debug "DisplayName: ${device.displayName}"
@@ -43,19 +43,25 @@ def configure(BigDecimal multiplier, String register)
     
     log.debug "Setting Register ${register}"
     state.register = register
+    
+    log.debug "Setting Prefix ${prefix}"
+    state.prefix = prefix
 }
 
-def handleMeasurements(data)
+def handleMeasurements(data, prefix)
 {
-	//log.debug "Handle Measurements: ${data}"
+	//log.debug "Handle Measurements: ${data}, ${prefix}"
     
-    def val = data[state.register]
-    //log.debug "Raw Value: ${val}"
-    
-    val *= state.multiplier
-    //log.debug "Scaled Value: ${val}"
-    
-    sendEvent(name: "power", value: Math.round(val))
+    if(prefix == state.prefix)
+    {
+    	def val = data[state.register]
+        //log.debug "Raw Value: ${val}"
+
+        val *= state.multiplier
+        //log.debug "Scaled Value: ${val}"
+
+        sendEvent(name: "power", value: Math.round(val))
+    }
 }
 
 def parse(String description)
