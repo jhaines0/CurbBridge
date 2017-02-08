@@ -137,21 +137,37 @@ function connectCurb()
 {
     console.log("Subscribing to streaming data");
     
-    var topic = profile._embedded.profiles[0].real_time[0].topic;
+    profile._embedded.profiles.forEach(
+        function(prof)
+        {
+            var topic = prof.real_time[0].topic;
+            
+            var client  = mqtt.connect(prof.real_time[0]._links.ws.href);
+         
+            var prefix = prof.real_time[0].prefix;
+         
+            client.on('connect', function ()
+            {
+                console.log("Connected, subscribing to " + topic);
+                client.subscribe(topic)
+            })
+             
+            client.on('message', function (topic, message)
+            {
+                //console.log(message.toString())
+                
+                var parsedMessage = JSON.parse(message.toString());
+                parsedMessage.prefix = prefix;
+
+                var reconstitutedMessage = JSON.stringify(parsedMessage);
+                console.log("Sending: " + reconstitutedMessage);
+                
+                smartThings.send("data", reconstitutedMessage);
+            })
+        }
+    );
     
-    var client  = mqtt.connect(profile._embedded.profiles[0].real_time[0]._links.ws.href);
- 
-    client.on('connect', function ()
-    {
-        console.log("Connected");
-        client.subscribe(topic)
-    })
-     
-    client.on('message', function (topic, message)
-    {
-        console.log(message.toString())
-        smartThings.send("data", message.toString());
-    })
+
 }
 
 
