@@ -124,14 +124,14 @@ def dataArrived()
     if(json)
     {
         //log.debug "Got Data: ${json}"
-		if(json.ts % 5 == 0)
-        {
+		//if(json.ts % 5 == 0)
+        //{
             getChildDevices().each
             {
                 //log.debug "Forwarding to ${it.name}"
                 it.handleMeasurements(json.measurements)
             }
-        }
+        //}
     }
 }
 
