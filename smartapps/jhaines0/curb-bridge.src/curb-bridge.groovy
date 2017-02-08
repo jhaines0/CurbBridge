@@ -78,40 +78,43 @@ def metadataArrived()
     {
     	//log.debug "Got Metadata ${json}"
         
-        def prefix = json._embedded.profiles[0].real_time[0].prefix
+        json._embedded.profiles.each { profile ->
+            def prefix = profile.real_time[0].prefix
+            log.debug "Profile Prefix: ${prefix}"
         
-        json._embedded.profiles[0]._embedded.registers.registers.each
-        {
-        	log.debug "ID: ${it.id}"
-            log.debug "Label: ${it.label}"
-            log.debug "Flip: ${it.flip_domain}"
-            log.debug "Multiplier: ${it.multiplier}"
-            
-            def register = it.id.substring(prefix.size()+1)
-            log.debug "Register: ${register}"
-            
-        	def dni = "${it.id}"
-
-            try
+            profile._embedded.registers.registers.each
             {
-                def existingDevice = getChildDevice(dni)
+                //log.debug "ID: ${it.id}"
+                //log.debug "Label: ${it.label}"
+                //log.debug "Flip: ${it.flip_domain}"
+                //log.debug "Multiplier: ${it.multiplier}"
 
-                if(!existingDevice)
+                def register = it.id.substring(prefix.size()+1)
+                //log.debug "Register: ${register}"
+
+                def dni = "${it.id}"
+
+                try
                 {
-                    existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${it.label}"])
-                }
+                    def existingDevice = getChildDevice(dni)
 
-				def mult = it.multiplier
-                if(it.flip_domain)
+                    if(!existingDevice)
+                    {
+                        existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${it.label}"])
+                    }
+
+                    def mult = it.multiplier
+                    if(it.flip_domain)
+                    {
+                        mult = mult * -1
+                    }
+
+                    existingDevice.configure(mult, register, prefix)
+                } 
+                catch (e)
                 {
-                	mult = mult * -1
+                    log.error "Error creating device: ${e}"
                 }
-
-                existingDevice.configure(mult, register)
-            } 
-            catch (e)
-            {
-                log.error "Error creating device: ${e}"
             }
         }
     }
@@ -123,13 +126,13 @@ def dataArrived()
     def json = request.JSON
     if(json)
     {
-        //log.debug "Got Data: ${json}"
+        log.debug "Got Data: ${json}"
 		//if(json.ts % 5 == 0)
         //{
             getChildDevices().each
             {
                 //log.debug "Forwarding to ${it.name}"
-                it.handleMeasurements(json.measurements)
+                it.handleMeasurements(json.measurements, json.prefix)
             }
         //}
     }
