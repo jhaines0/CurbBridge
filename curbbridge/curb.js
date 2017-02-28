@@ -216,14 +216,14 @@ function connectCurb()
 {
     console.log("Subscribing to streaming data");
     
-    profile._embedded.profiles.forEach(
-        function(prof)
+    profile._embedded.profiles[0].real_time.forEach(
+        function(rt)
         {
-            var topic = prof.real_time[0].topic;
+            var topic = rt.topic;
             
-            var client  = mqtt.connect(prof.real_time[0]._links.ws.href);
+            var client  = mqtt.connect(rt._links.ws.href);
          
-            var prefix = prof.real_time[0].prefix;
+            var prefix = rt.prefix;
          
             client.on('connect', function ()
             {
