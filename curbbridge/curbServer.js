@@ -84,10 +84,10 @@ var server = http.createServer(function (request, response)
             
             var userInfo = qs.parse(body);
             
-            console.log("Client ID: " + userInfo.client_id);
-            console.log("Client Secret: " + userInfo.client_secret);
-            console.log("Username: "+ userInfo.username);
-            console.log("Password: " + userInfo.password);
+            //console.log("Client ID: " + userInfo.client_id);
+            //console.log("Client Secret: " + userInfo.client_secret);
+            //console.log("Username: "+ userInfo.username);
+            //console.log("Password: " + userInfo.password);
             
             var onConnect = function()
             {
