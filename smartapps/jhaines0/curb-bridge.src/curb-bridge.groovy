@@ -78,43 +78,38 @@ def metadataArrived()
     {
     	//log.debug "Got Metadata ${json}"
         
-        json._embedded.profiles.each { profile ->
-            def prefix = profile.real_time[0].prefix
-            log.debug "Profile Prefix: ${prefix}"
-        
-            profile._embedded.registers.registers.each
+        json._embedded.profiles[0]._embedded.registers.registers.each
+        {
+            //log.debug "ID: ${it.id}"
+            //log.debug "Label: ${it.label}"
+            //log.debug "Flip: ${it.flip_domain}"
+            //log.debug "Multiplier: ${it.multiplier}"
+
+            def register = it.id.substring(it.id.size()-3)
+            //log.debug "Register: ${register}"
+
+            def dni = "${it.id}"
+
+            try
             {
-                //log.debug "ID: ${it.id}"
-                //log.debug "Label: ${it.label}"
-                //log.debug "Flip: ${it.flip_domain}"
-                //log.debug "Multiplier: ${it.multiplier}"
+                def existingDevice = getChildDevice(dni)
 
-                def register = it.id.substring(prefix.size()+1)
-                //log.debug "Register: ${register}"
-
-                def dni = "${it.id}"
-
-                try
+                if(!existingDevice)
                 {
-                    def existingDevice = getChildDevice(dni)
-
-                    if(!existingDevice)
-                    {
-                        existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${it.label}"])
-                    }
-
-                    def mult = it.multiplier
-                    if(it.flip_domain)
-                    {
-                        mult = mult * -1
-                    }
-
-                    existingDevice.configure(mult, register, prefix)
-                } 
-                catch (e)
-                {
-                    log.error "Error creating device: ${e}"
+                    existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${it.label}"])
                 }
+
+                def mult = it.multiplier
+                if(it.flip_domain)
+                {
+                    mult = mult * -1
+                }
+
+                existingDevice.configure(mult, register)
+            } 
+            catch (e)
+            {
+                log.error "Error creating device: ${e}"
             }
         }
     }
