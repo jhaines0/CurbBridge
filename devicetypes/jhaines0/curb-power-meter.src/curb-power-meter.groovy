@@ -23,8 +23,8 @@ metadata {
 
 	tiles
     {
-    	valueTile("power", "device.power", width: 2, height: 2) {
-			state "default", label:'${currentValue} W'
+    	valueTile("power", "device.power", width: 2, height: 2, canChangeIcon: true) {
+			state "default", label:'${currentValue} W',  icon: "st.Home.home2"
 		}
 		main (["power"])
 		details(["power"])
