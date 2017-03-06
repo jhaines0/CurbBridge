@@ -14,7 +14,7 @@ var mqtt = require('mqtt');
 
 var smartThings;
 
-function getCurbToken(username, password, st)
+function getCurbToken(username, password, st, accessTokenCb)
 {
     smartThings = st;
     console.log("Logging in to Curb");
@@ -53,6 +53,8 @@ function getCurbToken(username, password, st)
                                 console.log("Curb Access Token: " + curbAccessToken);
                                 console.log("Curb Refresh Token: " + curbRefreshToken);
                                 
+                                accessTokenCb(curbAccessToken);
+                                
                                 getCurbProfile();
                             });
                         }
@@ -61,6 +63,13 @@ function getCurbToken(username, password, st)
                             console.log("Something Went Wrong...");
                         }
                     });
+}
+
+function useCurbToken(token, st)
+{
+    curbAccessToken = token;
+    smartThings = st;
+    getCurbProfile();
 }
 
 function getCurbProfile()
@@ -251,4 +260,5 @@ function connectCurb()
 
 
 module.exports.connect = getCurbToken;
+module.exports.reconnect = useCurbToken;
 

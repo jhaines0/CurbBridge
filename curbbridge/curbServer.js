@@ -9,6 +9,19 @@ var curb = require('./curb');
 
 var stAuthCode;
 
+var persistentFileName = "CurbBridgeData.json"
+var persistentState = 
+{
+    stToken:"",
+    curbToken:"",
+};
+
+function savePersistentState()
+{
+    var state = JSON.stringify(persistentState);
+    fs.writeFile(persistentFileName, state, function(err){if(err) return console.error(err);})
+}
+
 var server = http.createServer(function (request, response)
 {
 
@@ -89,13 +102,29 @@ var server = http.createServer(function (request, response)
             //console.log("Username: "+ userInfo.username);
             //console.log("Password: " + userInfo.password);
             
+            
             var onConnect = function()
             {
                 console.log("Curb onConnect");
-                curb.connect(userInfo.username, userInfo.password, st);
+                
+                var saveCurbToken = function(token)
+                {
+                    console.log("Saving curb token");
+                    persistentState.curbToken = token;
+                    savePersistentState();
+                }
+                
+                curb.connect(userInfo.username, userInfo.password, st, saveCurbToken);
             }
             
-            st.connect(stAuthCode, userInfo.client_id, userInfo.client_secret, onConnect);
+            var saveAccessToken = function(token)
+            {
+                console.log("Saving ST access token");
+                persistentState.stToken = token;
+                savePersistentState();
+            }
+            
+            st.connect(stAuthCode, userInfo.client_id, userInfo.client_secret, onConnect, saveAccessToken);
             
         });
         
@@ -105,6 +134,16 @@ var server = http.createServer(function (request, response)
     }
     
 });
+
+if(fs.existsSync(persistentFileName))
+{
+    persistentState = JSON.parse(fs.readFileSync(persistentFileName).toString())
+    console.log("Loaded Persistent State: " + persistentState);
+
+    console.log("Attempting automatic connect");
+            
+    st.reconnect(persistentState.stToken, function(){curb.reconnect(persistentState.curbToken, st);});
+}
 
 server.listen(8000);
 console.log("Server running at http://127.0.0.1:8000/");

@@ -5,7 +5,7 @@ var stEndpoint;
 var onConnect = function(){console.log("Default onConnect");};
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-function getAccessToken(authCode, clientID, clientSecret, onConnectCb)
+function getAccessToken(authCode, clientID, clientSecret, onConnectCb, accessTokenCb)
 {
     onConnect = onConnectCb;
 
@@ -32,6 +32,7 @@ function getAccessToken(authCode, clientID, clientSecret, onConnectCb)
                 
                 accessToken = JSON.parse(req.responseText).access_token;
                 console.log("Access Token: " + accessToken);
+                accessTokenCb(accessToken);
                 getEndpoints();
             }
             else
@@ -45,6 +46,13 @@ function getAccessToken(authCode, clientID, clientSecret, onConnectCb)
     req.send(null);
 }
 
+function useAccessToken(token, onConnectCb)
+{
+    onConnect = onConnectCb;
+    accessToken = token;
+    
+    getEndpoints();
+}
 
 function getEndpoints()
 {
@@ -95,5 +103,6 @@ function sendDataToST(endpoint, data)
 }
 
 module.exports.connect = getAccessToken;
+module.exports.reconnect = useAccessToken;
 module.exports.send = sendDataToST;
 
