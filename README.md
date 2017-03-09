@@ -26,7 +26,9 @@ Use of this integration requires an independent server running the bridge softwa
 - Click Submit.  The page should redirect to a blank page with the text "Got It".
 - Close the browser and you should see that the node application is streaming data.
 - Open your SmartThings app and verify that there are several new power meters added.
-- You can stop the server by pressing ctrl+c in the termnial window.  Each time you restart the server you will need to repeat the authentication process in the browser.
+- You can stop the server by pressing ctrl+c in the termnial window.
+- The server will store the access tokens in a file (CurbBridgeData.json) and will automatically connect on subsequent launches.
+- If the tokens expire you will need to re-authenticate in the browser. The expired tokens in the file will be replaced automatically.
 
 ## Notes:
 - This has only been tested with a single Curb Power Hub.  If you have more than one, please comment on the SmartThings forum and I can add support.
