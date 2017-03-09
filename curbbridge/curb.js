@@ -60,7 +60,8 @@ function getCurbToken(username, password, st, accessTokenCb)
                         }
                         else
                         {
-                            console.log("Something Went Wrong...");
+                            console.log("Something Went Wrong while submitting form data to Curb");
+                            if(err) throw err;
                         }
                     });
 }
@@ -97,7 +98,7 @@ function getCurbProfile()
             }
             else
             {
-                console.log("Something went wrong");
+                console.log("Something went wrong while getting curb profile");
             }
         }
     };
@@ -134,7 +135,7 @@ function getCurbMetadata()
             }
             else
             {
-                console.log("Something went wrong");
+                console.log("Something went wrong while getting curb metadata");
             }
         }
     };
