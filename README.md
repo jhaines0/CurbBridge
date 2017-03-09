@@ -31,5 +31,4 @@ Use of this integration requires an independent server running the bridge softwa
 - If the tokens expire you will need to re-authenticate in the browser. The expired tokens in the file will be replaced automatically.
 
 ## Notes:
-- This has only been tested with a single Curb Power Hub.  If you have more than one, please comment on the SmartThings forum and I can add support.
 - The browser used for authentication must be running on the same computer as the server.
