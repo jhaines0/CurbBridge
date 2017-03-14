@@ -23,9 +23,16 @@ metadata {
 
 	tiles
     {
-    	valueTile("power", "device.power", width: 2, height: 2, canChangeIcon: true) {
-			state "default", label:'${currentValue} W',  icon: "st.Home.home2"
-		}
+		multiAttributeTile(name:"power", type: "lighting", width: 6, height: 4, canChangeIcon: true) {
+        	tileAttribute ("device.power", key: "PRIMARY_CONTROL") {
+ 	    		attributeState "power", label:'${currentValue} W', icon: "st.Home.home2", backgroundColors: [
+            		[value: 0,   color: "#00b000"],
+            		[value: 100, color: "#ffcc00"],
+                    [value: 1000, color: "#c00000"]
+        		]
+			}
+        }
+        
 		main (["power"])
 		details(["power"])
 	}
