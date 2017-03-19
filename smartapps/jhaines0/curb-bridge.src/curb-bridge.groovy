@@ -26,9 +26,9 @@ definition(
 
 
 preferences {
-	section("Title") {
-		// TODO: put inputs here
-	}
+	section("Settings") {
+    	input "updatePeriod", "number", required: true, title: "Update Period (in seconds)", defaultValue: 10, range: "1..*"
+    }
 }
 
 mappings {
@@ -122,14 +122,14 @@ def dataArrived()
     if(json)
     {
         log.debug "Got Data: ${json}"
-		//if(json.ts % 5 == 0)
-        //{
+		if(json.ts % updatePeriod == 0)
+        {
             getChildDevices().each
             {
                 //log.debug "Forwarding to ${it.name}"
                 it.handleMeasurements(json.measurements, json.prefix)
             }
-        //}
+        }
     }
 }
 
