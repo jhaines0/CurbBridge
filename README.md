@@ -11,7 +11,7 @@ Use of this integration requires an independent server running the bridge softwa
 - Publish both the SmartApp and DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration.
 - Go to the SmartApp settings for the Curb Bridge in the IDE.  Verify that OAuth is turned on and the redirect uri is set to http://localhost:8000
 - Take note of the Client ID and Client Secret, they will be required later
-- Use the mobile app to install the Curb Bridge SmartApp.  It won't appear to do anything other than show up on the list of SmartApps.
+- Use the mobile app to install the Curb Bridge SmartApp.  During installation you can select the update rate for the sensors.  The data is generated at 1Hz, but if you don't need this full rate you can select a larger sample period.  After install, it won't appear to do anything other than show up on the list of SmartApps.
 
 ### Bridge Server:
 - Install Node.js on the computer you intend to use for the bridge server.  I have tested it on an Ubuntu 16.04 x64 desktop and an original Raspberry Pi.  It should work for Windows and Mac.  Installers are available [here](https://nodejs.org/en/download/)
