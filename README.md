@@ -1,3 +1,6 @@
+# No Longer Working
+As of 4/27/17 this integration has been broken by an update the Curb system.  Details can be found on the SmartThings forum.  https://community.smartthings.com/t/beta-release-curb-energy-monitor-integration-no-longer-working/77051
+
 # CurbBridge
 Bridge between Curb Energy Monitor and SmartThings
 
