@@ -13,7 +13,8 @@ var persistentFileName = "CurbBridgeData.json"
 var persistentState = 
 {
     stToken:"",
-    curbToken:"",
+    curbClientId:"",
+    curbRefreshToken:""
 };
 
 function savePersistentState()
@@ -101,20 +102,25 @@ var server = http.createServer(function (request, response)
             //console.log("Client Secret: " + userInfo.client_secret);
             //console.log("Username: "+ userInfo.username);
             //console.log("Password: " + userInfo.password);
+            //console.log("Curb Client ID: " + userInfo.curb_client_id);
+            //console.log("Curb Client Secret: " + userInfo.curb_client_secret);
             
+            persistentState.curbClientId = userInfo.curb_client_id;
+            persistentState.curbClientSecret = userInfo.curb_client_secret;
+            savePersistentState();
             
             var onConnect = function()
             {
                 console.log("Curb onConnect");
                 
-                var saveCurbToken = function(token)
+                var saveCurbToken = function(refreshToken)
                 {
                     console.log("Saving curb token");
-                    persistentState.curbToken = token;
+                    persistentState.curbRefreshToken = refreshToken;
                     savePersistentState();
                 }
                 
-                curb.connect(userInfo.username, userInfo.password, st, saveCurbToken);
+                curb.connect(userInfo, st, saveCurbToken);
             }
             
             var saveAccessToken = function(token)
@@ -142,7 +148,7 @@ if(fs.existsSync(persistentFileName))
 
     console.log("Attempting automatic connect");
             
-    st.reconnect(persistentState.stToken, function(){curb.reconnect(persistentState.curbToken, st);});
+    st.reconnect(persistentState.stToken, function(){curb.reconnect(persistentState.curbRefreshToken, persistentState.curbClientId, persistentState.curbClientSecret, st);});
 }
 
 server.listen(8000);
