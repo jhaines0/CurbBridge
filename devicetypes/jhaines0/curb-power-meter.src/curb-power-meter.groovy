@@ -38,37 +38,8 @@ metadata {
 	}
 }
 
-def configure(BigDecimal multiplier, String register)
+def handleMeasurements(values)
 {
-	log.debug "Name: ${device.name}"
-    log.debug "DisplayName: ${device.displayName}"
-    log.debug "ID: ${device.id}"
-    log.debug "Label: ${device.label}"
-
-	log.debug "Setting Multiplier ${multiplier}"
-	state.multiplier = multiplier
-    
-    log.debug "Setting Register ${register}"
-    state.register = register
-}
-
-def handleMeasurements(data, prefix)
-{
-	//log.debug "Handle Measurements: ${data}, ${prefix}"
-    
-    if(device.name.contains(prefix))
-    {
-    	def val = data[state.register]
-        //log.debug "Raw Value: ${val}"
-
-        val *= state.multiplier
-        //log.debug "Scaled Value: ${val}"
-
-        sendEvent(name: "power", value: Math.round(val))
-    }
-}
-
-def parse(String description)
-{
-	log.debug "Parsing '${description}'"
+	def val = values[0].w // For now just strip out the first (newest) reading and use it
+    sendEvent(name: "power", value: Math.round(val))
 }
