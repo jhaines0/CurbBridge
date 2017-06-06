@@ -9,7 +9,7 @@ var locations;
 var smartThings;
 
 var request = require('request');
-
+var io = require('socket.io-client');
 
 function getCurbToken(userInfo, st, refreshTokenCb)
 {
@@ -57,6 +57,7 @@ function getCurbToken(userInfo, st, refreshTokenCb)
                  })
  
 }
+
 
 function refreshToken(refreshCompleteCb)
 {
@@ -114,6 +115,7 @@ function getCurbLocations()
                     console.log("Got Content: " + body);
                     locations = JSON.parse(body);
                     
+                    //connectToLiveData();
                     setInterval(function(){getHistoricalUsage();}, 5*1000);
                 }
                 else
@@ -126,6 +128,41 @@ function getCurbLocations()
         .auth(null, null, true, curbAccessToken);
 }
 
+
+function connectToLiveData()
+{
+
+    var socket = io('https://app.energycurb.com/circuit-data',
+                            {
+                                reconnect: true,
+                                transports: ['websocket']
+                            });
+                            
+    socket.on('news', function(data) {console.log("News: " + data);});
+    socket.on('error', function(data) {console.log("Error: " + data);});
+    socket.on('connect_error', function(data) {console.log("Connect Error: " + data);});
+    socket.on('connecting', function(data) {console.log("Connecting: " + data);});
+    socket.on('connect', function()
+              {
+                  console.log("Connected, authenticating");
+                  console.log("ID: " + socket.id);
+                  socket.emit('authenticate', {token: curbAccessToken}, function(data){console.log("Auth Ack: " + data);});
+                  //socket.emit('subscribe', locations[0]);
+              });
+    socket.on('authorized', 
+              function()
+              {
+                  console.log("Authorized, suscribing");
+                  socket.emit('subscribe', locations[0]);
+              });
+    socket.on('unauthorized', function(data) {console.log("Unauthorized: " + data);});
+    socket.on('data', 
+              function(data)
+              {
+                  console.log("Got Data: " + data);
+              });
+    //socket.on('disconnect', connectToLiveData);
+}
 
 function getHistoricalUsage()
 {
@@ -145,8 +182,8 @@ function getHistoricalUsage()
                 else
                 {
                     console.log("Something went wrong getting historical data");
-                    console.log(response.statusCode);
-                    console.log(error);
+                    if(response){console.log(response.statusCode);}
+                    if(error){console.log(error);}
                 }
              })
         .auth(null, null, true, curbAccessToken);

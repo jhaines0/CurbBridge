@@ -5,6 +5,7 @@
   "main": "curbServer.js",
   "dependencies": {
     "request": "^2.81.0",
+    "socket.io-client": "^2.0.2",
     "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {},
