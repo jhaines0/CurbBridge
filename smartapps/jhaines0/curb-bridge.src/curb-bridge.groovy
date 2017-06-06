@@ -27,16 +27,11 @@ definition(
 
 preferences {
 	section("Settings") {
-    	input "updatePeriod", "number", required: true, title: "Update Period (in seconds)", defaultValue: 10, range: "1..*"
+    	input "updatePeriod", "number", required: false, title: "Update Period (in seconds)", defaultValue: 10, range: "1..*"
     }
 }
 
 mappings {
-  path("/metadata") {
-    action: [
-      PUT: "metadataArrived"
-    ]
-  }
   path("/data") {
     action: [
       PUT: "dataArrived"
@@ -58,6 +53,7 @@ def updated() {
 }
 
 def uninstalled() {
+	log.debug "Uninstalling"
     removeChildDevices(getChildDevices())
 }
 
@@ -70,25 +66,17 @@ private removeChildDevices(delete) {
 def initialize() {
 }
 
-def metadataArrived()
+def dataArrived()
 {
-	log.debug "Metadata Endpoint"
+	//log.debug "Data Endpoint"
     def json = request.JSON
     if(json)
     {
-    	//log.debug "Got Metadata ${json}"
+        //log.debug "Got Data: ${json}"
         
-        json._embedded.profiles[0]._embedded.registers.registers.each
+        json.each
         {
-            //log.debug "ID: ${it.id}"
-            //log.debug "Label: ${it.label}"
-            //log.debug "Flip: ${it.flip_domain}"
-            //log.debug "Multiplier: ${it.multiplier}"
-
-            def register = it.id.substring(it.id.size()-3)
-            //log.debug "Register: ${register}"
-
-            def dni = "${it.id}"
+        	def dni = "${it.id}"
 
             try
             {
@@ -98,38 +86,24 @@ def metadataArrived()
                 {
                     existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${it.label}"])
                 }
-
-                def mult = it.multiplier
-                if(it.flip_domain)
-                {
-                    mult = mult * -1
-                }
-
-                existingDevice.configure(mult, register)
-            } 
+                
+                existingDevice.handleMeasurements(it.values)
+            }
             catch (e)
             {
-                log.error "Error creating device: ${e}"
+                log.error "Error creating or updating device: ${e}"
             }
         }
-    }
-}
-
-def dataArrived()
-{
-	//log.debug "Data Endpoint"
-    def json = request.JSON
-    if(json)
-    {
-        log.debug "Got Data: ${json}"
-		if(json.ts % updatePeriod == 0)
-        {
-            getChildDevices().each
-            {
-                //log.debug "Forwarding to ${it.name}"
-                it.handleMeasurements(json.measurements, json.prefix)
-            }
-        }
+        
+        
+//		if(json.ts % updatePeriod == 0)
+//        {
+//            getChildDevices().each
+//            {
+//                //log.debug "Forwarding to ${it.name}"
+//                it.handleMeasurements(json.measurements, json.prefix)
+//            }
+//        }
     }
 }
 
