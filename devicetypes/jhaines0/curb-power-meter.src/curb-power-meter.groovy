@@ -55,7 +55,7 @@ def handleMeasurements(values)
     
 	state.values = values;
     
-    def val = values[0].w // For now just strip out the first (newest) reading and use it
+    def val = values[values.size()-1].w // For now just strip out the first (newest) reading and use it
     sendEvent(name: "power", value: Math.round(val))
 }
 
