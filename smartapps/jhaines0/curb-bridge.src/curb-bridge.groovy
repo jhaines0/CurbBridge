@@ -66,35 +66,47 @@ private removeChildDevices(delete) {
 def initialize() {
 }
 
+int updateChildDevice(dni, label, values)
+{
+    try
+    {
+        def existingDevice = getChildDevice(dni)
+
+        if(!existingDevice)
+        {
+            existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${label}"])
+        }
+
+        existingDevice.handleMeasurements(values)
+        
+        return existingDevice.powerState.value.toInteger();
+    }
+    catch (e)
+    {
+        log.error "Error creating or updating device: ${e}"
+        return 0;
+    }
+}
+
 def dataArrived()
 {
-	//log.debug "Data Endpoint"
     def json = request.JSON
     if(json)
     {
         //log.debug "Got Data: ${json}"
         
+        def totalMain = 0
         json.each
         {
-        	def dni = "${it.id}"
-
-            try
+			def pwr = updateChildDevice("${it.id}", it.label, it.values)
+            
+            if(it.main)
             {
-                def existingDevice = getChildDevice(dni)
-
-                if(!existingDevice)
-                {
-                    existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${it.label}"])
-                }
-                
-                existingDevice.handleMeasurements(it.values)
-            }
-            catch (e)
-            {
-                log.error "Error creating or updating device: ${e}"
+                totalMain += pwr;
             }
         }
         
+        updateChildDevice("__MAIN__", "Main", [[t:0,w:totalMain]])
         
 //		if(json.ts % updatePeriod == 0)
 //        {
