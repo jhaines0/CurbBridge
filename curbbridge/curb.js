@@ -112,11 +112,12 @@ function getCurbLocations()
              {
                 if(response && response.statusCode == 200)
                 {
-                    console.log("Got Content: " + body);
+                    console.log("Curb Location Info: " + body);
                     locations = JSON.parse(body);
                     
                     //connectToLiveData();
-                    setInterval(function(){getHistoricalUsage();}, 5*1000);
+                    getHistoricalUsage();
+                    setInterval(function(){getHistoricalUsage();}, 30*1000);
                 }
                 else
                 {
@@ -166,9 +167,9 @@ function connectToLiveData()
 
 function getHistoricalUsage()
 {
-    var url = "https://app.energycurb.com/api/historical/"+locations[0].id+"/1h/5m"
+    var url = "https://app.energycurb.com/api/historical/"+locations[0].id+"/3h/m"
     
-    console.log("Getting historical data: " + url);
+    //console.log("Getting historical data: " + url);
     
     request
         .get(url,
