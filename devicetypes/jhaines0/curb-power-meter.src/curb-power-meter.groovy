@@ -55,6 +55,8 @@ def handleMeasurements(values)
     
 	state.values = values;
     
+    //log.debug("State now contains ${state.toString().length()}/100000 bytes")
+    
     def val = values[values.size()-1].w // For now just strip out the first (newest) reading and use it
     sendEvent(name: "power", value: Math.round(val))
 }
@@ -63,26 +65,14 @@ String getDataString()
 {
 	def dataString = ""
 
-	state.values.each() {
+	state.values.each()
+    {
     	def ts = (long)it.t * 1000.0
-        def theDate = new Date(ts + location.timeZone.getOffset(ts))
-        def theTime = [theDate.getHours(), theDate.getMinutes(), theDate.getSeconds()].toString()
-        
-		dataString += [theTime, it.w].toString() + ","
+		dataString += ["new Date(${ts + location.timeZone.getOffset(ts)})", it.w].toString() + ","
 	}
-    //log.debug "Datastring: '${dataString}'"
+    //log.debug "dataString: ${dataString}"
     
 	return dataString
-}
-
-def getStartTime()
-{
-    def ts = (long)state.values[0].t * 1000.0
-    def theDate = new Date(ts + location.timeZone.getOffset(ts))
-    def theTime = [theDate.getHours(), theDate.getMinutes(), theDate.getSeconds()].toString()
-    //log.debug("TheTime: ${theTime}")
-    
-	return theTime
 }
 
 def generateGraphHTML() {
@@ -96,7 +86,7 @@ def generateGraphHTML() {
 						google.charts.setOnLoadCallback(drawGraph);
 						function drawGraph() {
 							var data = new google.visualization.DataTable();
-							data.addColumn('timeofday', 'time');
+							data.addColumn('datetime', 'time');
 							data.addColumn('number', 'Power');
 							data.addRows([
 								${getDataString()}
@@ -106,7 +96,6 @@ def generateGraphHTML() {
 								height: 240,
 								hAxis: {
 									format: 'h:mm aa',
-									minValue: [${getStartTime()}],
 									slantedText: false
 								},
 								series: {
