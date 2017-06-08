@@ -95,18 +95,44 @@ def dataArrived()
     {
         //log.debug "Got Data: ${json}"
         
-        def totalMain = 0
+        def total = null
+        
         json.each
         {
 			def pwr = updateChildDevice("${it.id}", it.label, it.values)
             
             if(it.main)
             {
-                totalMain += pwr;
+            	it.values.sort{a,b -> a.t <=> b.t}
+            	if(total == null)
+                {
+                	total = it
+                }
+                else
+                {
+                    if(it.values.size() != total.values.size())
+                    {
+                    	log.debug("Size mismatch")
+                    }
+                    else
+                    {
+						for(int i = 0; i < total.values.size(); ++i)
+                        {
+                        	if(total.values[i].t != it.values[i].t)
+                            {
+                            	log.debug("Time mismatch")
+                            }
+                            else
+                            {
+								total.values[i].w = (total.values[i].w) + (it.values[i].w)
+							}
+                        }
+					}
+				}
             }
         }
         
-        updateChildDevice("__MAIN__", "Main", [[t:0,w:totalMain]])
+        updateChildDevice("__MAIN__", "Main", total.values)
         
 //		if(json.ts % updatePeriod == 0)
 //        {
