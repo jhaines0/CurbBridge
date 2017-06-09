@@ -26,15 +26,20 @@ definition(
 
 
 preferences {
-	section("Settings") {
-    	input "updatePeriod", "number", required: false, title: "Update Period (in seconds)", defaultValue: 10, range: "1..*"
-    }
+//	section("Settings") {
+//    	input "updatePeriod", "number", required: false, title: "Update Period (in seconds)", defaultValue: 10, range: "1..*"
+//    }
 }
 
 mappings {
   path("/data") {
     action: [
       PUT: "dataArrived"
+    ]
+  }
+  path("/historical") {
+    action: [
+      PUT: "historicalArrived"
     ]
   }
 }
@@ -66,7 +71,7 @@ private removeChildDevices(delete) {
 def initialize() {
 }
 
-int updateChildDevice(dni, label, values)
+def updateChildDevice(dni, label, values)
 {
     try
     {
@@ -76,15 +81,12 @@ int updateChildDevice(dni, label, values)
         {
             existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${label}"])
         }
-
+		
         existingDevice.handleMeasurements(values)
-        
-        return existingDevice.powerState.value.toInteger();
     }
     catch (e)
     {
         log.error "Error creating or updating device: ${e}"
-        return 0;
     }
 }
 
@@ -94,12 +96,34 @@ def dataArrived()
     if(json)
     {
         //log.debug "Got Data: ${json}"
+        def total = 0.0
+
+        json.circuits.each
+        {
+            updateChildDevice("${it.id}", it.label, it.w)
+
+            if(it.main)
+            {
+                total += it.w
+            }
+        }
+
+        updateChildDevice("__MAIN__", "Main", total)
+    }
+}
+
+def historicalArrived()
+{
+    def json = request.JSON
+    if(json)
+    {
+        //log.debug "Got Historical Data: ${json}"
         
         def total = null
         
         json.each
         {
-			def pwr = updateChildDevice("${it.id}", it.label, it.values)
+			updateChildDevice("${it.id}", it.label, it.values)
             
             if(it.main)
             {
@@ -133,15 +157,6 @@ def dataArrived()
         }
         
         updateChildDevice("__MAIN__", "Main", total.values)
-        
-//		if(json.ts % updatePeriod == 0)
-//        {
-//            getChildDevices().each
-//            {
-//                //log.debug "Forwarding to ${it.name}"
-//                it.handleMeasurements(json.measurements, json.prefix)
-//            }
-//        }
     }
 }
 
