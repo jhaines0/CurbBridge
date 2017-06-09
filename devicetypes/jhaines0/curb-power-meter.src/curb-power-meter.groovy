@@ -50,15 +50,18 @@ mappings {
 
 def handleMeasurements(values)
 {
-	// For some reason they show up out of order
-    values.sort{a,b -> a.t <=> b.t}
-    
-	state.values = values;
-    
+	if(values instanceof Collection)
+    {
+    	// For some reason they show up out of order
+    	values.sort{a,b -> a.t <=> b.t}
+		state.values = values;
+    }
+    else
+    {
+    	sendEvent(name: "power", value: Math.round(values))
+    }
+
     //log.debug("State now contains ${state.toString().length()}/100000 bytes")
-    
-    def val = values[values.size()-1].w // For now just strip out the first (newest) reading and use it
-    sendEvent(name: "power", value: Math.round(val))
 }
 
 String getDataString()
@@ -68,7 +71,7 @@ String getDataString()
 	state.values.each()
     {
     	def ts = (long)it.t * 1000.0
-		dataString += ["new Date(${ts + location.timeZone.getOffset(ts)})", it.w].toString() + ","
+		dataString += ["new Date(${ts})", it.w].toString() + ","
 	}
     //log.debug "dataString: ${dataString}"
     
