@@ -115,7 +115,7 @@ function getCurbLocations()
                     console.log("Curb Location Info: " + body);
                     locations = JSON.parse(body);
                     
-                    //connectToLiveData();
+                    connectToLiveData();
                     getHistoricalUsage();
                     setInterval(function(){getHistoricalUsage();}, 30*1000);
                 }
@@ -132,42 +132,36 @@ function getCurbLocations()
 
 function connectToLiveData()
 {
-
-    var socket = io('https://app.energycurb.com/circuit-data',
+    var socket = io('https://app.energycurb.com/api/circuit-data',
                             {
                                 reconnect: true,
                                 transports: ['websocket']
                             });
                             
-    socket.on('news', function(data) {console.log("News: " + data);});
-    socket.on('error', function(data) {console.log("Error: " + data);});
-    socket.on('connect_error', function(data) {console.log("Connect Error: " + data);});
-    socket.on('connecting', function(data) {console.log("Connecting: " + data);});
     socket.on('connect', function()
               {
-                  console.log("Connected, authenticating");
-                  console.log("ID: " + socket.id);
+                  console.log("Connected to socket.io, authenticating");
                   socket.emit('authenticate', {token: curbAccessToken}, function(data){console.log("Auth Ack: " + data);});
-                  //socket.emit('subscribe', locations[0]);
               });
     socket.on('authorized', 
               function()
               {
-                  console.log("Authorized, suscribing");
-                  socket.emit('subscribe', locations[0]);
+                  console.log("Authorized for socket.io, suscribing to live data");
+                  socket.emit('subscribe', locations[0].id);
               });
-    socket.on('unauthorized', function(data) {console.log("Unauthorized: " + data);});
     socket.on('data', 
               function(data)
               {
-                  console.log("Got Data: " + data);
+                  json = JSON.stringify(data);
+                  //console.log("Got Live Data: " + json);
+                  smartThings.send("data", json);
               });
     //socket.on('disconnect', connectToLiveData);
 }
 
 function getHistoricalUsage()
 {
-    var url = "https://app.energycurb.com/api/historical/"+locations[0].id+"/3h/m"
+    var url = "https://app.energycurb.com/api/historical/"+locations[0].id+"/24h/5m"
     
     //console.log("Getting historical data: " + url);
     
@@ -178,7 +172,7 @@ function getHistoricalUsage()
                 if(response && response.statusCode == 200)
                 {
                     //console.log("Got historical data: " + body);
-                    smartThings.send("data",body);
+                    smartThings.send("historical",body);
                 }
                 else
                 {
