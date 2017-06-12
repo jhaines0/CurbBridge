@@ -14,6 +14,7 @@ var persistentState =
 {
     stToken:"",
     curbClientId:"",
+    curbClientSecret:"",
     curbRefreshToken:""
 };
 
@@ -104,6 +105,9 @@ var server = http.createServer(function (request, response)
             //console.log("Password: " + userInfo.password);
             //console.log("Curb Client ID: " + userInfo.curb_client_id);
             //console.log("Curb Client Secret: " + userInfo.curb_client_secret);
+            
+            userInfo.curb_client_id = 'R7LHLp5rRr6ktb9hhXfMaILsjwmIinKa'
+            userInfo.curb_client_secret = 'pcxoDsqCN7o_ny5KmEKJ2ci0gL5qqOSfxnzF6JIvwsfRsUVXFdD-DUc40kkhHAZR'
             
             persistentState.curbClientId = userInfo.curb_client_id;
             persistentState.curbClientSecret = userInfo.curb_client_secret;
