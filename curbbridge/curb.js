@@ -117,7 +117,7 @@ function getCurbLocations()
                     
                     connectToLiveData();
                     getHistoricalUsage();
-                    setInterval(function(){getHistoricalUsage();}, 30*1000);
+                    setInterval(function(){getHistoricalUsage();}, 5*60*1000);
                 }
                 else
                 {
