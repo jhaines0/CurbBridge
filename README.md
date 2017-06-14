@@ -33,3 +33,6 @@ Use of this integration requires an independent server running the bridge softwa
 ## Notes:
 - The browser used for authentication must be running on the same computer as the server.
 - The graphing feature in the SmartThings app is experimental.  It relies on an undocumented feature of ST and does not always work.  Hopefully ST improves support for htmlTile in the future.
+
+## Troubleshooting:
+- If you get an error "client ID is not associated with any smartapps at this location", just reload the authentication page and try again.  This probably means you just installed the SmartApp and it hasn't percolated all the way through the ST auth system.
