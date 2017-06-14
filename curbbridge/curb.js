@@ -115,9 +115,9 @@ function getCurbLocations()
                     console.log("Curb Location Info: " + body);
                     locations = JSON.parse(body);
                     
-                    connectToLiveData();
                     getHistoricalUsage();
                     setInterval(function(){getHistoricalUsage();}, 5*60*1000);
+                    setTimeout(function(){connectToLiveData();}, 10*1000);
                 }
                 else
                 {
