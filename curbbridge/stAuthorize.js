@@ -1,14 +1,9 @@
 
 function getAuthorizationCode() {
-    document.getElementById("stProgress").innerHTML = "Authorizing with Smartthings";
+    var clientID = document.getElementById("clientIdForm").elements["client_id"].value;
     
-    var x = document.getElementById("clientIdForm");
-    var text = x.action;
-    
-    var clientID = x.elements[0].value;
-    
+    var text = "https://graph.api.smartthings.com/oauth/authorize";
     text += "?client_id=" + clientID;
-        
     text += "&response_type=code";
     text += "&scope=app";
     text += "&redirect_uri=http://localhost:8000/authSuccess.html";

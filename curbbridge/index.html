@@ -2,25 +2,12 @@
 <html>
 <body>
 
-    <form method="get" id="clientIdForm" action="https://graph.api.smartthings.com/oauth/authorize">
-        Client ID: <input type="text" name="client_id" value=""><br>
+    <form id="clientIdForm" action="javascript:void(0);">
+        SmartThings Client ID: <input type="text" name="client_id" value=""><br>
     </form>
-
+    
     <button onclick="getAuthorizationCode()">Connect to Smartthings</button><br>
     
-    
-    <p id="stProgress"></p>
-    
-    
-    <form method="post" id="connectForm" action="http://127.0.0.1:8000/">
-        Client ID: <input type="text" name="client_id" value=""><br>
-        Client Secret: <input type="text" name="client_secret" autocomplete="on" value=""><br>
-        Curb Username: <input type="text" name="username" value=""><br>
-        Curb Password: <input type="password" name="password"><br>
-        <input type="submit" value="Submit">
-    </form>
-    
-
     <iframe id="stIframe" hidden=true width=400 height=600></iframe>
     
     <script src="stAuthorize.js" type="text/javascript"></script>
