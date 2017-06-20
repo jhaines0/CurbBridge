@@ -20,13 +20,13 @@ Use of this integration requires an independent server running the bridge softwa
 - Run the server with the command <pre>node .</pre>
 - You should see "Server running at http://127.0.0.1:8000/" in the console
 - Open a browser and direct it to http://127.0.0.1:8000/
-- Enter your ST Client ID in the top box
-- Click Connect to SmartThings.  A new frame should appear.  Select your location and click Authorize.  The frame should now indicate "Authorization Success"
-- Complete the remaining boxes on the page with your ST Client ID (same as above), Client Secret, Curb username (probably your email address) and Curb password.
+- Enter your SmartThings Client ID in the text box
+- Click Connect to SmartThings.  A new frame should appear.  Log in to your SmartThings account, select your location and click Authorize.  The frame should now indicate "Authorization Success" and your browser redirected to a second form.
+- Complete the form on the page with your SmartThings Client ID (same as above), Client Secret, Curb username (probably your email address) and Curb password.
 - Click Submit.  The page should redirect to a blank page with the text "Got It".
 - Close the browser and you should see that the node application reporting that it has connected.
 - Open your SmartThings app and verify that there are several new power meters added.
-- You can stop the server by pressing ctrl+c in the termnial window.
+- You can stop the server by pressing ctrl+c in the terminal window.
 - The server will store the access tokens in a file (CurbBridgeData.json) and will automatically connect on subsequent launches.
 - If the tokens expire you will need to re-authenticate in the browser. The expired tokens in the file will be replaced automatically.
 
