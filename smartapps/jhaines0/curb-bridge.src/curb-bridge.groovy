@@ -45,16 +45,9 @@ mappings {
 }
 
 def installed() {
-	log.debug "Installed with settings: ${settings}"
-
-	initialize()
 }
 
 def updated() {
-	log.debug "Updated with settings: ${settings}"
-
-	unsubscribe()
-	initialize()
 }
 
 def uninstalled() {
@@ -66,9 +59,6 @@ private removeChildDevices(delete) {
     delete.each {
         deleteChildDevice(it.deviceNetworkId)
     }
-}
-
-def initialize() {
 }
 
 def updateChildDevice(dni, label, values)
