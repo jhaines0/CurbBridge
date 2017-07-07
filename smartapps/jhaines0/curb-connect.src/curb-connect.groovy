@@ -106,6 +106,9 @@ def callback() {
             
             atomicState.refreshToken = resp.data.refresh_token
 			atomicState.authToken = resp.data.access_token
+            
+            getCurbLocations()
+		    getUsage()
 		}
 
 		if (atomicState.authToken) {
@@ -225,7 +228,6 @@ def initialize() {
     
     refreshAuthToken()
     getCurbLocations()
-    //getUsageFromHistorical()
     getUsage()
     
     //runEvery1Minute(getUsageFromHistorical)
@@ -292,9 +294,18 @@ def updateChildDevice(dni, label, values)
 
         if(!existingDevice)
         {
-            existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${label}"])
+        	if(values instanceof Collection)
+            {
+            	// Trying to update a non-existent device with historical data, just skip it
+            	return;
+            }
+            else
+            {
+            	// Otherwise create it
+                existingDevice = addChildDevice("jhaines0", "Curb Power Meter", dni, null, [name: "${dni}", label: "${label}"])
+            }
         }
-		
+        
         existingDevice.handleMeasurements(values)
     }
     catch (e)
