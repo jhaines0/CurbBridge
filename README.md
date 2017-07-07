@@ -19,7 +19,7 @@ This integration adds a new power meter in SmartThings for each sensor on your C
 
 ## Notes
 - The default sample rate updates each reading once a minute. You can change the sample rate by clicking on Curb (Connect) in your installed SmartApps and changing the Sample Rate input.
-- There is currently a bug which can result in duplicate devices.  If you do end up with duplicate devices, try re-installing the Curb (Connect) SmartApp.  It is less likely to occur if you do not adjust the sample rate during initial installation.
+- There is currently a bug which can result in duplicate devices.  If you do end up with duplicate devices, try re-installing the Curb (Connect) SmartApp.  It is less likely to occur if you perform the installation slowly.  Give it ~10 seconds between each step.
 
 
 
