@@ -1,3 +1,29 @@
+# Options
+This repository contains two options for integration between SmartThings and Curb.  Option 1 (Curb Connect) is preferred.  It operates entirely in the SmartThings cloud and is very easy to set up.  Option 2 (CurbBridge) was the original version which requires a standalone server running node.js.  It is kept here for reference.  The only reason to use CurbBridge is if you absolutely must have usage data at 1 second intervals.  The Curb Connect version is limited to 4 seconds, with 1 minute as the default.
+
+You must not install both SmartApps in the same SmartThings location.
+
+# Curb Connect
+Direct connection between the SmartThings cloud and the Curb cloud.
+
+This integration adds a new power meter in SmartThings for each sensor on your Curb.
+
+## Installation
+- Publish both the Curb (Connect) SmartApp and CurPowerMeter DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration.
+- Use the SmartThings mobile app to add the Curb (Connect) SmartApp.
+- During installation you will see a link "Click to enter Curb credentials", click it and log in with the credentials you use to access your Curb account.
+- After logging in, click "Done"
+- You will be directed to a page that says "You are connected to Curb".  Click "Done" again.
+- You should now see a new device for each of your curb sensors.
+- You may not see updates immediately after installation.  Wait five minutes for the ST scheduler to catch up after initial installation.
+
+## Notes
+- The default sample rate updates each reading once a minute. You can change the sample rate by clicking on Curb (Connect) in your installed SmartApps and changing the Sample Rate input.  This should *not* be done during initial installation as it may cause duplicate devices to be created.
+- If you do end up with duplicate devices, try re-installing the Curb (Connect) SmartApp.
+
+
+
+
 # CurbBridge
 Bridge between Curb Energy Monitor and SmartThings
 
@@ -8,7 +34,7 @@ Use of this integration requires an independent server running the bridge softwa
 ## Installation:
 
 ### SmartThings:
-- Publish both the SmartApp and DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration.
+- Publish both the CurbBridge SmartApp and CurbPowerMeter DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration.
 - Go to the SmartApp settings for the Curb Bridge in the IDE.  Verify that OAuth is turned on and the redirect uri is set to http://localhost:8000
 - Take note of the Client ID and Client Secret, they will be required later
 - Use the mobile app to install the Curb Bridge SmartApp.  After install, it won't appear to do anything other than show up on the list of SmartApps.
