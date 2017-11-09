@@ -317,7 +317,7 @@ def updateChildDevice(dni, label, values)
 include 'asynchttp_v1'
 
 
-/*
+
 def getUsageFromHistorical() {
 
     log.debug("Getting Usage (from Historical)")
@@ -338,6 +338,8 @@ def processUsageFromHistorical(resp, data) {
         log.debug "Usage from Historical Response Error: ${resp.getErrorMessage()}"
         return
     }
+
+	log.debug "Got Usage (from Historical)"
 
     def json = resp.json
 
@@ -361,7 +363,7 @@ def processUsageFromHistorical(resp, data) {
         updateChildDevice("__MAIN__", "Main", mainSum)
     }
 }
-*/
+
 
 def getUsage() {
 
@@ -382,6 +384,10 @@ def processUsage(resp, data) {
     if (resp.hasError())
     {
         log.error "Usage Response Error: ${resp.getErrorMessage()}"
+        
+        log.debug "Falling back to historical endpoint"
+        getUsageFromHistorical()
+        
         return
     }
 
