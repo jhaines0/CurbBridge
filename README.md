@@ -35,7 +35,7 @@ Use of this integration requires an independent server running the bridge softwa
 ## Installation:
 
 ### SmartThings:
-- Publish both the CurbBridge SmartApp and Curb Power Meter DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration.
+- Publish both the CurbBridge SmartApp and Curb Power Meter DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration. (instructions: https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772 )
 - Go to the SmartApp settings for the Curb Bridge in the IDE.  Verify that OAuth is turned on and the redirect uri is set to http://localhost:8000
 - Take note of the Client ID and Client Secret, they will be required later
 - Use the mobile app to install the Curb Bridge SmartApp.  After install, it won't appear to do anything other than show up on the list of SmartApps.
