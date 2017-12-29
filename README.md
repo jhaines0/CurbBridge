@@ -9,7 +9,7 @@ Direct connection between the SmartThings cloud and the Curb cloud.
 This integration adds a new power meter in SmartThings for each sensor on your Curb.
 
 ## Installation
-- Publish both the Curb (Connect) SmartApp and Curb Power Meter DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration.
+- Publish both the Curb (Connect) SmartApp and Curb Power Meter DeviceHandler to your account.  Either copy-paste into the IDE or use the GitHub integration. (instructions: https://community.smartthings.com/t/faq-an-overview-of-using-custom-code-in-smartthings/16772 )
 - Go to the SmartApp settings for the Curb (Connect) SmartApp in the IDE.  Verify that OAuth is enabled.
 - Use the SmartThings mobile app to add the Curb (Connect) SmartApp.
 - During installation you will see a link "Click to enter Curb credentials", click it and log in with the credentials you use to access your Curb account.
