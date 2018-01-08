@@ -352,11 +352,13 @@ def processUsageFromHistorical(resp, data) {
         {
             def latest = it.values.max {vv -> vv.t}
 
-            updateChildDevice("${it.id}", it.label, latest.w)
-
             if(it.main)
             {
                 mainSum += latest.w
+            }
+            else
+            {
+            	updateChildDevice("${it.id}", it.label, latest.w)
             }
         }
 
