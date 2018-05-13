@@ -101,7 +101,6 @@ def callback() {
 		]
 
 		httpPostJson([uri: curbTokenUrl, body: tokenParams]) { resp ->
-			log.debug "response contentType: ${resp.contentType}"
             log.debug("Got POST response: ${resp.data}")
             
             atomicState.refreshToken = resp.data.refresh_token
@@ -197,7 +196,7 @@ def connectionStatus(message, redirectUrl = null) {
             </head>
         <body>
             <div class="container">
-                <img src="http://energycurb.com/wp-content/uploads/2015/12/curb-web-logo.png" alt="curb icon" />
+                <img src="http://energycurb.com/wp-content/uploads/2015/12/curb-web-logo.png" alt="Curb Icon" />
                 <img src="https://s3.amazonaws.com/smartapp-icons/Partner/support/connected-device-icn%402x.png" alt="connected device icon" />
                 <img src="https://s3.amazonaws.com/smartapp-icons/Partner/support/st-logo%402x.png" alt="SmartThings logo" />
                 ${message}
@@ -273,7 +272,7 @@ def getCurbLocations()
     def params = [
     	uri: "http://app.energycurb.com",
     	path: "/api/locations",
-        headers: ["Authorization": "Bearer ${atomicState.authToken}"]
+        headers: ["Authorization": "Bearer ${atomicState.authToken}"],
 	]
 
 	try {
@@ -282,7 +281,7 @@ def getCurbLocations()
             log.debug("Location ID: ${atomicState.location}")
 		}
 	} catch (e) {
-    	log.error "something went wrong: $e"
+    	log.error "Could not get location info: $e"
 	}
 }
 
@@ -339,7 +338,7 @@ def processUsageFromHistorical(resp, data) {
         return
     }
 
-	log.debug "Got Usage (from Historical)"
+	log.debug "  -> Got Usage (from Historical)"
 
     def json = resp.json
 
@@ -385,11 +384,8 @@ def processUsage(resp, data) {
 
     if (resp.hasError())
     {
-        log.error "Usage Response Error: ${resp.getErrorMessage()}"
-        
-        log.debug "Falling back to historical endpoint"
+        log.debug "Usage Response Error: ${resp.getErrorMessage()}, falling back to historical"
         getUsageFromHistorical()
-        
         return
     }
 
@@ -433,7 +429,7 @@ def processHistorical(resp, data)
 
     if(json)
     {
-        //log.debug "Got Historical Data: ${json}"
+        log.debug "  -> Got Historical Data"
         def total = null
 
         json.each
@@ -494,7 +490,7 @@ def refreshAuthToken() {
 
 		httpPostJson([uri: curbTokenUrl, body: tokenParams]) { resp ->
 			log.debug "response contentType: ${resp.contentType}"
-            log.debug("Got POST response: ${resp.data}")
+            log.debug("Got POST response (refresh): ${resp.data}")
             
 			atomicState.authToken = resp.data.access_token
 		}
