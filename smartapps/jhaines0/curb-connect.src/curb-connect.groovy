@@ -287,6 +287,12 @@ def getCurbLocations()
 
 def updateChildDevice(dni, label, values)
 {
+	if(dni == null)
+    {
+    	log.error("Tried to create a null child device! Label: $label")
+        return;
+    }
+
     try
     {
         def existingDevice = getChildDevice(dni)
@@ -393,6 +399,7 @@ def processUsage(resp, data) {
 
     if(json)
     {
+        log.debug "  -> Got Usage Data"
     	//log.debug "Got Latest: ${json}"
 
         json.circuits.each
