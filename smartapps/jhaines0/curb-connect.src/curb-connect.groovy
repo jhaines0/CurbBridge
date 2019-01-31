@@ -355,6 +355,7 @@ def processUsageFromHistorical(resp, data) {
 
         json.each
         {
+        	//log.debug "Have sensor: ${it.label} (${it.id})"
             def latest = it.values.max {vv -> vv.t}
 
             if(it.main)
@@ -368,6 +369,10 @@ def processUsageFromHistorical(resp, data) {
         }
 
         updateChildDevice("__MAIN__", "Main", mainSum)
+    }
+    else
+    {
+    	log.error "Malformed data in usage from historical: ${resp.data}"
     }
 }
 
@@ -396,18 +401,23 @@ def processUsage(resp, data) {
     }
 
     def json = resp.json
-
+    
     if(json)
     {
-        log.debug "  -> Got Usage Data"
+        log.debug "  -> Got Usage Data (${json.circuits.size()} sensors)"
     	//log.debug "Got Latest: ${json}"
 
         json.circuits.each
         {
+        	//log.debug "Have sensor: ${it.label} (${it.id})"
             updateChildDevice("${it.id}", it.label, it.w)
         }
 
         updateChildDevice("__MAIN__", "Main", json.net)
+    }
+    else
+    {
+    	log.error "Malformed usage data: ${resp.data}"
     }
 }
 
@@ -475,6 +485,10 @@ def processHistorical(resp, data)
         }
 
         updateChildDevice("__MAIN__", "Main", total.values)
+    }
+    else
+    {
+    	log.error "Malformed historical data: ${resp.data}"
     }
 }
 
