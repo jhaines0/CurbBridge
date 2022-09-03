@@ -1,3 +1,6 @@
+# As of September 2022, this project no longer works
+Curb made breaking changes to their API and SmartThings is on the verge of shutting down the whole groovy-based infrastructure. This project will remain up to hopefully inspire future work.
+
 # Setup Options
 This repository contains two options for integration between SmartThings and Curb.  Option 1 (Curb Connect) is preferred.  It operates entirely in the SmartThings cloud and is very easy to set up.  Option 2 (CurbBridge) was the original version which requires a standalone server running node.js.  It is kept here for reference.  The only reason to use CurbBridge is if you absolutely must have usage data at 1 second intervals.  The Curb Connect version is limited to 4 seconds, with 1 minute as the default.
 
